@@ -1,5 +1,7 @@
 # README
 
+## Bloccit: a Reddit replica to teach the fundamentals of web development and Rails
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
