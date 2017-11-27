@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
-  get 'welcome/index'
 
-  get 'welcome/about'
+#we call `resources` method and pass it a `Symbol`.
+#This instructs Rails to create post routes for creating, updating, viewing, and deleting
+#instances of `Post`
+resources :posts
 
-  root 'welcome#index'
+#modify the `about` route to allow users to visit `/about`, rather than `/welcome/about`
+get 'about' => 'welcome#about'
+
+root 'welcome#index'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
