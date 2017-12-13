@@ -1,5 +1,13 @@
 require 'random_data'
 
+15.times do
+   Topic.create!(
+     name:         RandomData.random_sentence,
+     description:  RandomData.random_paragraph
+   )
+ end
+ topics = Topic.all
+
 50.times do
 
   #we use create! with a bang (!). Adding a ! instructs the method to raise an error
@@ -10,6 +18,7 @@ require 'random_data'
   #we use methods from a class that does not exist yet, RandomData,
   #that will create random strings for title and body.
   #Writing code for classes and methods that don't exist is known as "wishful coding"
+    topic: topics.sample,
     title: RandomData.random_sentence,
     body: RandomData.random_paragraph
   )
@@ -32,5 +41,6 @@ posts = Post.all
 end
 
 puts "Seed finished"
+puts "#{Topic.count} topics created"
 puts "#{Post.count} posts created"
 puts "#{Comment.count} comments created"

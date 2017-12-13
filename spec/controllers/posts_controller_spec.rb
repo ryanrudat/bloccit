@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe PostsController, type: :controller do
+  let(:my_topic) { Topic.create!(name:  RandomData.random_sentence, description: RandomData.random_paragraph) }
 
-#create a post and assign it to `my_post` using `let`.
-#Use `RandomData` to give `my_post` a random title and body
-  let(:my_post) { Post.create!(title: RandomData.random_sentence, body: RandomData.random_paragraph) }
+  let(:my_post) { my_topic.posts.create!(title: RandomData.random_sentence, body: RandomData.random_paragraph) }
+
+
 
   # describe "GET #index" do
   #   it "returns http success" do
@@ -20,12 +21,12 @@ RSpec.describe PostsController, type: :controller do
   # end
   describe "GET edit" do
     it "returns http success" do
-      get :edit, params: { id: my_post.id }
+      get :edit, params: { topic_id: my_topic.id, id: my_post.id }
       expect(response).to have_http_status(:success)
     end
 
     it "renders the #edit view" do
-      get :edit, params: { id: my_post.id}
+      get :edit, params: {topic_id: my_topic, id: my_post.id}
 
       # we expect the edit view to render when a post is edited.
       expect(response).to render_template :edit
@@ -33,7 +34,7 @@ RSpec.describe PostsController, type: :controller do
 
     # we test that edit assigns the correct post to be updated to @post
     it "assigns post to be updated to @post" do
-      get :edit, params: { id: my_post.id}
+      get :edit, params: { topic_id: my_topic.id, id: my_post.id }
 
       post_instance = assigns(:post)
 
@@ -48,7 +49,7 @@ RSpec.describe PostsController, type: :controller do
       new_title = RandomData.random_sentence
       new_body = RandomData.random_paragraph
 
-      put :update, params: { id: my_post.id, post: {title: new_title, body: new_body }}
+      put :update, params: { topic_id: my_topic.id, id: my_post.id, post: {title: new_title, body: new_body }}
 
       updated_post = assigns(:post)
       expect(updated_post.id).to eq my_post.id
@@ -60,37 +61,37 @@ RSpec.describe PostsController, type: :controller do
       new_title = RandomData.random_sentence
       new_body = RandomData.random_paragraph
 
-      put :update, params: { id: my_post.id, post: {title: new_title, body: new_body }}
-      expect(response).to redirect_to my_post
+      put :update, params: { topic_id: my_post.id, id: my_post.id, post: {title: new_title, body: new_body }}
+      expect(response).to redirect_to [my_topic, my_post]
     end
   end
 
-  describe "DELETE destory" do
+  describe "DELETE destroy" do
     it "deletes the post" do
-      delete :destory, params: { id: my_post.id }
+      delete :destroy, params: { topic_id: my_topic.id, id: my_post.id }
       count = Post.where({id: my_post.id}).size
       expect(count).to eq 0
     end
-    it "redirects to posts index" do
-      delete :destory, params:{ id: my_post.id }
-      expect(response).to redirect_to posts_path
+    it "redirects to topic show" do
+      delete :destroy, params:{ topic_id: my_topic.id, id: my_post.id }
+      expect(response).to redirect_to my_topic
     end
   end
 
 
   describe "GET show" do
     it "return http success" do
-      get :show, params: { id: my_post.id }
+      get :show, params: { topic_id: my_topic.id, id: my_post.id }
       expect(response).to have_http_status(:success)
     end
     it "renders the #show view" do
 
-      get :show, params: { id: my_post.id }
+      get :show, params: { topic_id: my_topic.id, id: my_post.id }
       expect(response).to render_template :show
     end
 
     it "assigns my_post to @post" do
-      get :show, params: { id: my_post.id }
+      get :show, params: { topic_id: my_post.id, id: my_post.id }
       expect(assigns(:post)).to eq(my_post)
     end
   end
@@ -98,17 +99,17 @@ RSpec.describe PostsController, type: :controller do
 
   describe "GET #new" do
     it "returns http success" do
-      get :new
+      get :new, params: { topic_id: my_topic.id }
       expect(response).to have_http_status(:success)
     end
 
     it "renders the #new view" do
-      get :new
+      get :new, params: { topic_id: my_topic.id }
       expect(response).to render_template :new
     end
 
     it "instantiates @post" do
-      get :new
+      get :new, params: { topic_id: my_topic.id }
       expect(assigns(:post)).not_to be_nil
     end
   end
@@ -116,17 +117,17 @@ RSpec.describe PostsController, type: :controller do
 
   describe "POST create" do
     it "increases the number of Post by 1" do
-      expect{ post :create, params: { post: { title: RandomData.random_sentence, body: RandomData.random_paragraph } } }.to change(Post,:count).by(1)
+      expect{ post :create, params: { topic_id: my_topic.id, post: { title: RandomData.random_sentence, body: RandomData.random_paragraph } } }.to change(Post,:count).by(1)
     end
 
     it "assigns the new post to @post" do
-      post :create, params: { post: { title: RandomData.random_sentence, body: RandomData.random_paragraph } }
+      post :create, params: { topic_id: my_topic.id, post: { title: RandomData.random_sentence, body: RandomData.random_paragraph } }
       expect(assigns(:post)).to eq Post.last
     end
 
     it "redirects to the new post" do
-      post :create, params: { post: { title: RandomData.random_sentence, body: RandomData.random_paragraph } }
-      expect(response).to redirect_to Post.last
+      post :create, params: { topic_id: my_topic.id, post: { title: RandomData.random_sentence, body: RandomData.random_paragraph } }
+      expect(response).to redirect_to [my_topic, Post.last]
     end
   end
   # describe "GET #edit" do
